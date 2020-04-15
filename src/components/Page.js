@@ -9,7 +9,7 @@ class Page extends React.Component {
         this.state = {
             csvfile: undefined,
             allCourses: undefined,
-            currFilterType: "",
+            currFilterType: "Choose a filter",
             currFilterValue: "",
         }
 
@@ -24,8 +24,8 @@ class Page extends React.Component {
     // Handle uploaded CSV file
     handleUpload(event) {
         event.preventDefault();
-        console.log("What's the file?")
-        console.log(event.target.files[0])
+        console.log("What's the file?");
+        console.log(event.target.files[0]);
         this.setState({
             csvfile: event.target.files[0]
         });
@@ -33,8 +33,8 @@ class Page extends React.Component {
 
     // Save submitted CSV file and parses it
     importCSV() {
-        console.log("Pressed button:")
-        console.log(this.state.csvfile)
+        console.log("Pressed button:");
+        console.log(this.state.csvfile);
         const {csvfile} = this.state;
         Papa.parse(csvfile, {
           complete: this.updateData,
@@ -45,7 +45,7 @@ class Page extends React.Component {
 
     // Cleans parsed data and saves to state
     updateData(parsedFile) {
-        console.log("Inside updateData:")
+        console.log("Inside updateData:");
         var data = parsedFile.data;
 
         // In each course, the last item had an empty string key and no value 
@@ -65,7 +65,7 @@ class Page extends React.Component {
     handleFilterChange(event) {
         const target = event.target;
         if (target.name === 'filtertype') {
-            this.setState({currFilterType: target.value})
+            this.setState({currFilterType: target.value});
         } else {
             this.setState({currFilterValue: target.value});
         }
@@ -74,37 +74,52 @@ class Page extends React.Component {
     // Displays the current courses on the webpage
     handleFilterSubmit(event) {
         event.preventDefault();
-        console.log("In handleFilterSubmit")
-        console.log(this.state)
+        console.log("In handleFilterSubmit");
+        console.log(this.state);
         var items = [];
         const { allCourses } = this.state;
         const { currFilterType } = this.state;
         const { currFilterValue } = this.state;
 
-        // Display ONLY if there's a value
+        // Display ONLY if there's a value given
         if (currFilterValue !== "") {
-            // Find all the courses with that filter value with substring search
-            for (let i = 0; i < allCourses.length; i += 1) {
-                if (allCourses[i][currFilterType].search(currFilterValue) !== -1) {
-                    items.push(allCourses[i]);
+            const regex = new RegExp(currFilterValue, "gi");
+            // If there's a filter chosen, just iterate thru those
+            if (currFilterType !== "Choose a filter") {
+                // Find all the courses with that regex
+                for (let i = 0; i < allCourses.length; i += 1) {
+                    let val = allCourses[i][currFilterType].match(regex);
+                    if (val != null) {
+                        items.push(allCourses[i]);
+                    }
+                }
+                
+            }
+            // No filter chosen, iterate thru all courses and filters
+            else {
+                for (let i = 0; i < allCourses.length; i += 1) {
+                    for (let filter in allCourses[i]) {
+                        let val = allCourses[i][filter].match(regex);
+                        if (val != null) {
+                            items.push(allCourses[i]);
+                        }
+                    }
                 }
             }
-
             // Output better formatting with punctuation
-            var output = ""
+            var output = "";
             for (let i = 0; i < items.length; i += 1) {
                 for (let key in items[i]) {
-                    output += key
-                    output += ": "
+                    output += key;
+                    output += ": ";
                     output += items[i][key];
-                    output += ", "
+                    output += ", ";
                 }
-                output += "\n"
+                output += "\n";
             }
-
             // Writes result to the document
             document.getElementById("courses").innerHTML = output;
-            console.log(items)
+            console.log(items);
         }
     }
 
