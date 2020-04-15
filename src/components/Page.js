@@ -9,20 +9,19 @@ class Page extends React.Component {
         this.state = {
             csvfile: undefined,
             allCourses: undefined,
-            isFetching: false,
             currFilterType: "",
             currFilterValue: "",
         }
 
-        this.filesInput = React.createRef();
+        // Bind functions that use/change state variables
         this.handleUpload = this.handleUpload.bind(this);
         this.importCSV = this.importCSV.bind(this);
         this.updateData = this.updateData.bind(this);
         this.handleFilterChange = this.handleFilterChange.bind(this);
-        this.filter2 = this.filter2.bind(this);
+        this.handleFilterSubmit = this.handleFilterSubmit.bind(this);
     }
 
-    // handle uploaded csv file
+    // Handle uploaded CSV file
     handleUpload(event) {
         event.preventDefault();
         console.log("What's the file?")
@@ -32,6 +31,7 @@ class Page extends React.Component {
         });
     } 
 
+    // Save submitted CSV file and parses it
     importCSV() {
         console.log("Pressed button:")
         console.log(this.state.csvfile)
@@ -43,45 +43,25 @@ class Page extends React.Component {
         document.getElementById("uploadstatus").innerHTML = "Uploaded and Processed!";
     }
 
+    // Cleans parsed data and saves to state
     updateData(parsedFile) {
         console.log("Inside updateData:")
         var data = parsedFile.data;
+
+        // In each course, the last item had an empty string key and no value 
+        // Deleting it
+        for (let i = 0; i < data.length; i += 1) { 
+            delete data[i][""];
+        }
+
         this.setState({
             allCourses: data,
         })
         console.log(data);
         console.log(data[0]);
-        // var unparsed = Papa.unparse(data);
-        // console.log(unparsed)
       }
 
-    // Displays the courses on webpage
-    // filter = () => {
-    //     console.log("In filter:")
-    //     var items = [];
-    //     const { allCourses } = this.state;
-    //     for (let i = 0; i < allCourses.length; i += 1) {
-    //         // console.log(allCourses[i]["Units"])
-    //         if (allCourses[i]["Subject"] === "Architecture (ARCH)") {
-    //             items.push(allCourses[i]);
-    //         }
-    //     }
-    //     var output = ""
-    //     for (let i = 0; i < items.length; i += 1) {
-    //         for (let key in items[i]) {
-    //             console.log(key)
-    //             output += key
-    //             output += ": "
-    //             output += (key, items[i][key]);
-    //             output += " "
-    //         }
-    //         output += "\n"
-    //     }
-    //     console.log(items[0]);
-    //     document.getElementById("courses").innerHTML = output;
-    //     console.log(items)
-    // }
-
+    // Updates state with correct filter values
     handleFilterChange(event) {
         const target = event.target;
         if (target.name === 'filtertype') {
@@ -92,9 +72,9 @@ class Page extends React.Component {
     }
 
     // Displays the current courses on the webpage
-    filter2(event) {
+    handleFilterSubmit(event) {
         event.preventDefault();
-        console.log("In filter2")
+        console.log("In handleFilterSubmit")
         console.log(this.state)
         var items = [];
         const { allCourses } = this.state;
@@ -103,11 +83,14 @@ class Page extends React.Component {
 
         // Display ONLY if there's a value
         if (currFilterValue !== "") {
+            // Find all the courses with that filter value with substring search
             for (let i = 0; i < allCourses.length; i += 1) {
-                if (allCourses[i][currFilterType] === currFilterValue) {
+                if (allCourses[i][currFilterType].search(currFilterValue) !== -1) {
                     items.push(allCourses[i]);
                 }
             }
+
+            // Output better formatting with punctuation
             var output = ""
             for (let i = 0; i < items.length; i += 1) {
                 for (let key in items[i]) {
@@ -118,7 +101,8 @@ class Page extends React.Component {
                 }
                 output += "\n"
             }
-            console.log(items[0]);
+
+            // Writes result to the document
             document.getElementById("courses").innerHTML = output;
             console.log(items)
         }
@@ -134,27 +118,25 @@ class Page extends React.Component {
                 <input
                 className="csv-input"
                 type="file"
-                ref={input => {
-                    this.filesInput = input;
-                }}
                 name="file"
-                placeholder={null}
                 onChange={this.handleUpload}
+                accept=".csv"
                 />
                 <button onClick={this.importCSV}> Upload now!</button>
                 <pre id="uploadstatus"></pre>
                 <p />
                 <h3>Enter filter</h3>
-                <form onSubmit={this.filter2}>
+                <form onSubmit={this.handleFilterSubmit}>
                     <label>
                         Filter by: 
                         <select name="filtertype" value={this.state.currFilterType} onChange={this.handleFilterChange}>
-                            <option defaultValue="Default" disabled>Choose a filter</option>
+                            <option defaultValue="Default">Choose a filter</option>
                             <option value="Subject">Subject</option>
                             <option value="Class Nbr">Class Number</option>
                             <option value="Course Title">Course Title</option>
                             <option value="Units">Credits</option>
                             <option value="Location">Location</option>
+                            <option value="Keywords">Keywords</option>
                         </select>
                     </label>
                     <input type="text" name="filtervalue" value={this.state.currFilterValue} onChange={this.handleFilterChange}/>
