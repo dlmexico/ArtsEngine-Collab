@@ -11,6 +11,7 @@ class Page extends React.Component {
             allCourses: undefined,
             currFilterType: "Choose a filter",
             currFilterValue: "",
+            hasSubmitted: false,
         }
 
         // Bind functions that use/change state variables
@@ -76,6 +77,7 @@ class Page extends React.Component {
         event.preventDefault();
         console.log("In handleFilterSubmit");
         console.log(this.state);
+        this.setState({hasSubmitted: true});
         var items = [];
         const { allCourses } = this.state;
         const { currFilterType } = this.state;
@@ -88,20 +90,25 @@ class Page extends React.Component {
             if (currFilterType !== "Choose a filter") {
                 // Find all the courses with that regex
                 for (let i = 0; i < allCourses.length; i += 1) {
-                    let val = allCourses[i][currFilterType].match(regex);
-                    if (val != null) {
-                        items.push(allCourses[i]);
+                    // Only check entries with defined values
+                    if (allCourses[i][currFilterType] !== "") {
+                        let val = allCourses[i][currFilterType].match(regex);
+                        if (val != null) {
+                            items.push(allCourses[i]);
+                        }
                     }
                 }
-                
             }
             // No filter chosen, iterate thru all courses and filters
             else {
                 for (let i = 0; i < allCourses.length; i += 1) {
                     for (let filter in allCourses[i]) {
-                        let val = allCourses[i][filter].match(regex);
-                        if (val != null) {
-                            items.push(allCourses[i]);
+                        // Only check entries with defined values
+                        if (allCourses[i][filter] !== "") {
+                            let val = allCourses[i][filter].match(regex);
+                            if (val != null) {
+                                items.push(allCourses[i]);
+                            }
                         }
                     }
                 }
@@ -126,6 +133,7 @@ class Page extends React.Component {
     render() {
         console.log("Rendering:");
         console.log(this.state.csvfile);
+        // const hasSubmitted = this.state.hasSubmitted;
 
         return (
             <div className="app">
