@@ -42,6 +42,7 @@ class Page extends React.Component {
           header: true,
         });
         document.getElementById("uploadstatus").innerHTML = "Uploaded and Processed!";
+        document.getElementById("courses").innerHTML = "";
     }
 
     // Cleans parsed data and saves to state
@@ -83,50 +84,57 @@ class Page extends React.Component {
         const { currFilterType } = this.state;
         const { currFilterValue } = this.state;
 
-        // Display ONLY if there's a value given
-        if (currFilterValue !== "") {
-            const regex = new RegExp(currFilterValue, "gi");
-            // If there's a filter chosen, just iterate thru those
-            if (currFilterType !== "Choose a filter") {
-                // Find all the courses with that regex
-                for (let i = 0; i < allCourses.length; i += 1) {
-                    // Only check entries with defined values
-                    if (allCourses[i][currFilterType] !== "") {
-                        let val = allCourses[i][currFilterType].match(regex);
-                        if (val != null) {
-                            items.push(allCourses[i]);
-                        }
-                    }
-                }
-            }
-            // No filter chosen, iterate thru all courses and filters
-            else {
-                for (let i = 0; i < allCourses.length; i += 1) {
-                    for (let filter in allCourses[i]) {
+        // If a file has been uploaded
+        if (allCourses !== undefined) {
+            // Display ONLY if there's a value given
+            if (currFilterValue !== "") {
+                const regex = new RegExp(currFilterValue, "gi");
+                // If there's a filter chosen, just iterate thru those
+                if (currFilterType !== "Choose a filter") {
+                    // Find all the courses with that regex
+                    for (let i = 0; i < allCourses.length; i += 1) {
                         // Only check entries with defined values
-                        if (allCourses[i][filter] !== "") {
-                            let val = allCourses[i][filter].match(regex);
+                        if (allCourses[i][currFilterType] !== "") {
+                            let val = allCourses[i][currFilterType].match(regex);
                             if (val != null) {
                                 items.push(allCourses[i]);
                             }
                         }
                     }
                 }
-            }
-            // Output better formatting with punctuation
-            var output = "";
-            for (let i = 0; i < items.length; i += 1) {
-                for (let key in items[i]) {
-                    output += key;
-                    output += ": ";
-                    output += items[i][key];
-                    output += ", ";
+                // No filter chosen, iterate thru all courses and filters
+                else {
+                    for (let i = 0; i < allCourses.length; i += 1) {
+                        for (let filter in allCourses[i]) {
+                            // Only check entries with defined values
+                            if (allCourses[i][filter] !== "") {
+                                let val = allCourses[i][filter].match(regex);
+                                if (val != null) {
+                                    items.push(allCourses[i]);
+                                }
+                            }
+                        }
+                    }
                 }
-                output += "\n";
+                // Output w/ better formatting and punctuation
+                var output = "";
+                for (let i = 0; i < items.length; i += 1) {
+                    for (let key in items[i]) {
+                        output += key;
+                        output += ": ";
+                        output += items[i][key];
+                        output += ", ";
+                    }
+                    output += "\n";
+                }
+                // Writes result to the document
+                document.getElementById("courses").innerHTML = output;
+                console.log(items);
             }
-            // Writes result to the document
-            document.getElementById("courses").innerHTML = output;
-            console.log(items);
+        }
+        // No file uploaded
+        else {
+            document.getElementById("courses").innerHTML = "No file uploaded";
         }
     }
 
