@@ -1,5 +1,8 @@
 import React from 'react';
 import Papa from 'papaparse';
+import Titles from './Titles';
+import Data from './Data';
+import './Theme.css';
 
 class Page extends React.Component {
     constructor(props) {
@@ -12,6 +15,8 @@ class Page extends React.Component {
             currFilterType: "Choose a filter",
             currFilterValue: "",
             hasSubmitted: false,
+            results: [],
+            headers: [],
         }
 
         // Bind functions that use/change state variables
@@ -42,7 +47,7 @@ class Page extends React.Component {
           header: true,
         });
         document.getElementById("uploadstatus").innerHTML = "Uploaded and Processed!";
-        document.getElementById("courses").innerHTML = "";
+        // document.getElementById("courses").innerHTML = "";
     }
 
     // Cleans parsed data and saves to state
@@ -58,6 +63,7 @@ class Page extends React.Component {
 
         this.setState({
             allCourses: data,
+            headers: Object.keys(data[0]),
         })
         console.log(data);
         console.log(data[0]);
@@ -116,20 +122,23 @@ class Page extends React.Component {
                         }
                     }
                 }
+                this.setState({results: items});
+
                 // Output w/ better formatting and punctuation
-                var output = "";
-                for (let i = 0; i < items.length; i += 1) {
-                    for (let key in items[i]) {
-                        output += key;
-                        output += ": ";
-                        output += items[i][key];
-                        output += ", ";
-                    }
-                    output += "\n";
-                }
+                // var output = "";
+                // for (let i = 0; i < items.length; i += 1) {
+                //     for (let key in items[i]) {
+                //         output += key;
+                //         output += ": ";
+                //         output += items[i][key];
+                //         output += ", ";
+                //     }
+                //     output += "\n";
+                // }
+
                 // Writes result to the document
-                document.getElementById("courses").innerHTML = output;
-                console.log(items);
+                // document.getElementById("courses").innerHTML = output;
+                console.log(this.state);
             }
         }
         // No file uploaded
@@ -140,11 +149,13 @@ class Page extends React.Component {
 
     render() {
         console.log("Rendering:");
-        console.log(this.state.csvfile);
-        // const hasSubmitted = this.state.hasSubmitted;
+        console.log(this.state);
+        const hasSubmitted = this.state.hasSubmitted;
+        const { results } = this.state;
+        const { headers } = this.state;
 
         return (
-            <div className="app">
+            <div>
                 <h3>Import CSV File</h3>
                 <input
                 className="csv-input"
@@ -175,6 +186,24 @@ class Page extends React.Component {
                 </form>
                 <br></br>
                 <pre id="courses"></pre>
+                {hasSubmitted && 
+                    <table>
+                        <colgroup>
+                            <col span="25"></col>
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <Titles headers={headers} />
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <Data 
+                            results={results} 
+                            headers={headers}
+                            />
+                        </tbody>
+                    </table>
+                }
             </div>
         );
     }

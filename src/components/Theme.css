@@ -1,0 +1,18 @@
+table {
+    table-layout: fixed;
+    border: 1px solid;
+    border-collapse: collapse;
+}
+
+col {
+    border: 1px solid;
+}
+
+tr {
+    border: 1px solid;
+}
+
+.Description {
+    color: blue;
+    width: 50%;
+}
