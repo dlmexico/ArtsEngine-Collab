@@ -32,6 +32,7 @@ class Page extends React.Component {
         event.preventDefault();
         console.log("What's the file?");
         console.log(event.target.files[0]);
+
         this.setState({
             csvfile: event.target.files[0]
         });
@@ -41,13 +42,14 @@ class Page extends React.Component {
     importCSV() {
         console.log("Pressed button:");
         console.log(this.state.csvfile);
+
         const {csvfile} = this.state;
         Papa.parse(csvfile, {
           complete: this.updateData,
           header: true,
         });
         document.getElementById("uploadstatus").innerHTML = "Uploaded and Processed!";
-        // document.getElementById("courses").innerHTML = "";
+        document.getElementById("courses").innerHTML = "";
     }
 
     // Cleans parsed data and saves to state
@@ -65,8 +67,8 @@ class Page extends React.Component {
             allCourses: data,
             headers: Object.keys(data[0]),
         })
+
         console.log(data);
-        console.log(data[0]);
       }
 
     // Updates state with correct filter values
@@ -84,6 +86,7 @@ class Page extends React.Component {
         event.preventDefault();
         console.log("In handleFilterSubmit");
         console.log(this.state);
+
         this.setState({hasSubmitted: true});
         var items = [];
         const { allCourses } = this.state;
@@ -122,27 +125,15 @@ class Page extends React.Component {
                         }
                     }
                 }
+                // Update results with information
                 this.setState({results: items});
 
-                // Output w/ better formatting and punctuation
-                // var output = "";
-                // for (let i = 0; i < items.length; i += 1) {
-                //     for (let key in items[i]) {
-                //         output += key;
-                //         output += ": ";
-                //         output += items[i][key];
-                //         output += ", ";
-                //     }
-                //     output += "\n";
-                // }
-
-                // Writes result to the document
-                // document.getElementById("courses").innerHTML = output;
-                console.log(this.state);
+                // console.log(this.state);
             }
         }
         // No file uploaded
         else {
+            this.setState({hasSubmitted: false});
             document.getElementById("courses").innerHTML = "No file uploaded";
         }
     }
@@ -150,6 +141,7 @@ class Page extends React.Component {
     render() {
         console.log("Rendering:");
         console.log(this.state);
+
         const hasSubmitted = this.state.hasSubmitted;
         const { results } = this.state;
         const { headers } = this.state;

@@ -7,6 +7,7 @@ function Data(props) {
     // console.log("Inside Data");
     // console.log("Results length = " + results.length);
 
+    // Loop through every results row and create that row
     let returnData = results.map((obj, index) => {
         let key = Object.keys(obj);
         console.log("Key = " + key);

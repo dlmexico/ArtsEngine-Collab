@@ -3,12 +3,11 @@ import React from 'react';
 function Titles(props) {
     const { headers } = props;
 
+    // Displays the headers
     return (
         headers.map((title) => {
             return (
-                <th className={title}>
-                    <td>{title}</td>
-                </th>
+                <th className={title}>{title}</th>
             )
         })
     )
