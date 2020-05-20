@@ -1,5 +1,8 @@
 import React from 'react';
 import Papa from 'papaparse';
+import Titles from './Titles';
+import Data from './Data';
+import './Theme.css';
 
 class Page extends React.Component {
     constructor(props) {
@@ -11,6 +14,9 @@ class Page extends React.Component {
             allCourses: undefined,
             currFilterType: "Choose a filter",
             currFilterValue: "",
+            hasSubmitted: false,
+            results: [],
+            headers: [],
         }
 
         // Bind functions that use/change state variables
@@ -26,6 +32,7 @@ class Page extends React.Component {
         event.preventDefault();
         console.log("What's the file?");
         console.log(event.target.files[0]);
+
         this.setState({
             csvfile: event.target.files[0]
         });
@@ -35,12 +42,14 @@ class Page extends React.Component {
     importCSV() {
         console.log("Pressed button:");
         console.log(this.state.csvfile);
+
         const {csvfile} = this.state;
         Papa.parse(csvfile, {
           complete: this.updateData,
           header: true,
         });
         document.getElementById("uploadstatus").innerHTML = "Uploaded and Processed!";
+        document.getElementById("courses").innerHTML = "";
     }
 
     // Cleans parsed data and saves to state
@@ -56,9 +65,10 @@ class Page extends React.Component {
 
         this.setState({
             allCourses: data,
+            headers: Object.keys(data[0]),
         })
+
         console.log(data);
-        console.log(data[0]);
       }
 
     // Updates state with correct filter values
@@ -76,59 +86,68 @@ class Page extends React.Component {
         event.preventDefault();
         console.log("In handleFilterSubmit");
         console.log(this.state);
+
+        this.setState({hasSubmitted: true});
         var items = [];
         const { allCourses } = this.state;
         const { currFilterType } = this.state;
         const { currFilterValue } = this.state;
 
-        // Display ONLY if there's a value given
-        if (currFilterValue !== "") {
-            const regex = new RegExp(currFilterValue, "gi");
-            // If there's a filter chosen, just iterate thru those
-            if (currFilterType !== "Choose a filter") {
-                // Find all the courses with that regex
-                for (let i = 0; i < allCourses.length; i += 1) {
-                    let val = allCourses[i][currFilterType].match(regex);
-                    if (val != null) {
-                        items.push(allCourses[i]);
-                    }
-                }
-                
-            }
-            // No filter chosen, iterate thru all courses and filters
-            else {
-                for (let i = 0; i < allCourses.length; i += 1) {
-                    for (let filter in allCourses[i]) {
-                        let val = allCourses[i][filter].match(regex);
-                        if (val != null) {
-                            items.push(allCourses[i]);
+        // If a file has been uploaded
+        if (allCourses !== undefined) {
+            // Display ONLY if there's a value given
+            if (currFilterValue !== "") {
+                const regex = new RegExp(currFilterValue, "gi");
+                // If there's a filter chosen, just iterate thru those
+                if (currFilterType !== "Choose a filter") {
+                    // Find all the courses with that regex
+                    for (let i = 0; i < allCourses.length; i += 1) {
+                        // Only check entries with defined values
+                        if (allCourses[i][currFilterType] !== "") {
+                            let val = allCourses[i][currFilterType].match(regex);
+                            if (val != null) {
+                                items.push(allCourses[i]);
+                            }
                         }
                     }
                 }
-            }
-            // Output better formatting with punctuation
-            var output = "";
-            for (let i = 0; i < items.length; i += 1) {
-                for (let key in items[i]) {
-                    output += key;
-                    output += ": ";
-                    output += items[i][key];
-                    output += ", ";
+                // No filter chosen, iterate thru all courses and filters
+                else {
+                    for (let i = 0; i < allCourses.length; i += 1) {
+                        for (let filter in allCourses[i]) {
+                            // Only check entries with defined values
+                            if (allCourses[i][filter] !== "") {
+                                let val = allCourses[i][filter].match(regex);
+                                if (val != null) {
+                                    items.push(allCourses[i]);
+                                }
+                            }
+                        }
+                    }
                 }
-                output += "\n";
+                // Update results with information
+                this.setState({results: items});
+
+                // console.log(this.state);
             }
-            // Writes result to the document
-            document.getElementById("courses").innerHTML = output;
-            console.log(items);
+        }
+        // No file uploaded
+        else {
+            this.setState({hasSubmitted: false});
+            document.getElementById("courses").innerHTML = "No file uploaded";
         }
     }
 
     render() {
         console.log("Rendering:");
-        console.log(this.state.csvfile);
+        console.log(this.state);
+
+        const hasSubmitted = this.state.hasSubmitted;
+        const { results } = this.state;
+        const { headers } = this.state;
 
         return (
-            <div className="app">
+            <div>
                 <h3>Import CSV File</h3>
                 <input
                 className="csv-input"
@@ -159,6 +178,24 @@ class Page extends React.Component {
                 </form>
                 <br></br>
                 <pre id="courses"></pre>
+                {hasSubmitted && 
+                    <table>
+                        <colgroup>
+                            <col span="25"></col>
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <Titles headers={headers} />
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <Data 
+                            results={results} 
+                            headers={headers}
+                            />
+                        </tbody>
+                    </table>
+                }
             </div>
         );
     }
