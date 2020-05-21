@@ -117,7 +117,7 @@ class Page extends React.Component {
           for (let i = 0; i < allCourses.length; i += 1) {
             for (let filter in allCourses[i]) {
               // Only check entries with defined values
-              if (allCourses[i][filter] !== "") {
+              if (allCourses[i][filter]) {
                 let val = allCourses[i][filter].match(regex);
                 if (val != null) {
                   items.push(allCourses[i]);
