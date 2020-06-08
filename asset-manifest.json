@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/faculty-collab-tool/static/css/main.6efab67f.chunk.css",
+    "main.js": "/faculty-collab-tool/static/js/main.c186a1d2.chunk.js",
+    "main.js.map": "/faculty-collab-tool/static/js/main.c186a1d2.chunk.js.map",
+    "runtime-main.js": "/faculty-collab-tool/static/js/runtime-main.45a6ed17.js",
+    "runtime-main.js.map": "/faculty-collab-tool/static/js/runtime-main.45a6ed17.js.map",
+    "static/js/2.01a26d1f.chunk.js": "/faculty-collab-tool/static/js/2.01a26d1f.chunk.js",
+    "static/js/2.01a26d1f.chunk.js.map": "/faculty-collab-tool/static/js/2.01a26d1f.chunk.js.map",
+    "index.html": "/faculty-collab-tool/index.html",
+    "precache-manifest.02b63d582107ee7e20e117a80358ee16.js": "/faculty-collab-tool/precache-manifest.02b63d582107ee7e20e117a80358ee16.js",
+    "service-worker.js": "/faculty-collab-tool/service-worker.js",
+    "static/css/main.6efab67f.chunk.css.map": "/faculty-collab-tool/static/css/main.6efab67f.chunk.css.map",
+    "static/js/2.01a26d1f.chunk.js.LICENSE.txt": "/faculty-collab-tool/static/js/2.01a26d1f.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.45a6ed17.js",
+    "static/js/2.01a26d1f.chunk.js",
+    "static/css/main.6efab67f.chunk.css",
+    "static/js/main.c186a1d2.chunk.js"
+  ]
+}
